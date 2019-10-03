@@ -1,0 +1,377 @@
+<!--
+
+    (c) 2003-2018 MuleSoft, Inc. The software in this package is published under the terms of the Commercial Free Software license V.1 a copy of which has been included with this distribution in the LICENSE.md file.
+
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.0/jquery.js"></script>
+	 <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.1.1/css/bootstrap.css">
+	<script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.1.1/js/bootstrap.js"></script>
+</head>
+<body>
+	<style>
+		body {
+			padding-top: 40px;
+			padding-bottom: 40px;
+			background-color: #eee;
+		}
+		.form-signin {
+			max-width: 500px;
+			padding: 15px;
+			margin: 0 auto;
+		}
+		.form-signin .form-signin-heading,
+		.form-signin .checkbox {
+			margin-bottom: 10px;
+		}
+		.form-signin .checkbox {
+			font-weight: normal;
+		}
+		.form-signin .form-control {
+			position: relative;
+			height: auto;
+			-webkit-box-sizing: border-box;
+			-moz-box-sizing: border-box;
+			box-sizing: border-box;
+			padding: 10px;
+			font-size: 16px;
+		}
+		.form-signin .form-control:focus {
+			z-index: 2;
+		}
+		.form-signin input[type="email"] {
+			margin-bottom: -1px;
+			border-bottom-right-radius: 0;
+			border-bottom-left-radius: 0;
+		}
+		
+		.required{
+			color:red;
+		}
+	</style>
+	<script type="text/javascript">
+	
+	$(document).ready( function() {
+		$('input[name=recruitingStartDate]').val(getBackwardDateBy(6));
+		$('input[name=targetHireDate]').val(getBackwardDateBy(3));
+		
+		$('#createJobRequisitionForm').submit(function() {
+            $.ajax({
+                type: 'POST',
+                url: '/create-job-requisition',
+                data: $('#createJobRequisitionForm').serialize(),
+                success: function(data) {
+               		//Populates the textbox in the Post Job Section
+                	$('input[name=jobRequisitionIDValue]').val(data.ID);
+               		//Populates the textbox in the Unpost Job Section
+                	$('input[name=closeJobRequisitionRefID]').val(data.ID);
+               
+               		$('#createJobRequisitionFormDiv').collapse('hide');
+                 	$('#postJobFormDiv').collapse('show');
+                },
+            	error: function(request, status, error){
+            		alert(request.responseText);
+            	}
+            });
+
+            return false;
+        }); 
+	});
+	
+		$(document).ready( function() {
+			$('input[name=startDate]').val(getTodaysDate());
+			$('input[name=endDate]').val(getForwardDateBy(1));
+			
+			$('#postJobForm').submit(function() {
+                $.ajax({
+                    type: 'POST',
+                    url: '/post-job',
+                    data: $('#postJobForm').serialize(),
+                    success: function(data) {
+                    
+                       $('input[name=jobPostingRefIDValue]').val(data.ID);
+                       $('input[name=updateStartDate]').val(getTodaysDate());
+                       $('input[name=updateEndDate]').val(getForwardDateBy(3));
+                       
+                       $('#postJobFormDiv').collapse('hide');
+                       $('#updateJobPostingFormDiv').collapse('show');
+                    },
+                	error: function(request, status, error){
+                		alert(request.responseText);
+                	}
+                });
+
+                return false;
+            }); 
+		});
+		$(document).ready( function() {
+			$('#updateJobPostingForm').submit(function() {
+				$.ajax({
+					type: 'POST',
+					url: '/update-job-posting',
+					data: $('#updateJobPostingForm').serialize(),
+					success: function(data) {
+				       $('input[name=unpostEventRefID]').val(data.ID);
+                       $('input[name=unpostJobRefID]').val($('input[name=jobPostingRefIDValue]').val());
+                       
+                       $('#updateJobPostingFormDiv').collapse('hide');
+                       $('#unpostJobFormDiv').collapse('show');
+              		},
+                	error: function(request, status, error){
+                		alert(request.responseText);
+                	}
+				});
+				
+				return false;
+			});
+		});
+ 		
+		$(document).ready( function() {
+			$('#unpostJobForm').submit(function() {
+				$.ajax({
+					type: 'POST',
+					url: '/unpost-job',
+					data: $('#unpostJobForm').serialize(),
+					success: function(data) {
+					    $('input[name=jobRequisitionCloseDate]').val(getTodaysDate());
+						$('#unpostJobFormDiv').collapse('hide');
+						$('#closeJobRequisitionFormDiv').collapse('hide');
+					},
+	            	error: function(request, status, error){
+	            		alert(request.responseText);
+	            	}
+				});
+				
+				return false;
+			});
+		}); 
+ 		
+		$(document).ready( function() {
+			$('#closeJobRequisitionForm').submit(function() {
+				$.ajax({
+					type: 'POST',
+					url: '/close-job-requisition',
+					data: $('#closeJobRequisitionForm').serialize(),
+					success: function(data) {
+						$('input[name=getJobRequisitionRefID]').val(data.ID);
+						
+						$('#closeJobRequisitionFormDiv').collapse('hide');
+						$('#getJobRequisitionFormDiv').collapse('hide');
+					},
+	            	error: function(request, status, error){
+	            		alert(request.responseText);
+	            	}
+				});
+				
+				return false;
+			});
+		}); 
+		
+		
+		$(document).ready( function() {
+			$('#getJobRequisitionForm').submit(function() {
+				$.ajax({
+					type: 'POST',
+					url: '/get-job-requisition',
+					data: $('#getJobRequisitionForm').serialize(),
+					success: function(data) {
+						$('#getJobRequisitionFormDiv').collapse('hide');
+                        alert(data.Status);
+					},
+	            	error: function(request, status, error){
+	            		alert(request.responseText);
+	            	}
+				});
+				
+				return false;
+			});
+		}); 
+ 		
+ 		
+ 		function getTodaysDate(){
+ 			  var currentDate = new Date();
+ 			  
+ 			 //"0" is added to pad the date with two digits if day
+			  //is less than 10 e.g 3 becomes 03
+ 			  var day = ("0" + currentDate.getDate()).slice(-2);
+ 			  //Get Month is Zero based index
+ 			  var month = ("0" + (currentDate.getMonth() + 1)).slice(-2);
+ 			  var year = currentDate.getFullYear();
+ 			  
+ 			  return year+"-"+month+"-"+day;
+ 		}
+ 		
+ 		function getForwardDateBy(days){
+			  var currentDate = new Date();
+			  currentDate.setDate(currentDate.getDate() + days);
+			  
+			  //"0" is added to pad the date with two digits if day
+			  //is less than 10 e.g 3 becomes 03
+			  var day = ("0" + currentDate.getDate()).slice(-2);
+			  //Get Month is Zero based index
+			  var month = ("0" + (currentDate.getMonth() + 1)).slice(-2);
+			  var year = currentDate.getFullYear();
+			  
+			  return year+"-"+month+"-"+day;
+		}
+ 		
+ 		function getBackwardDateBy(days){
+			  var currentDate = new Date();
+			  currentDate.setDate(currentDate.getDate() - days);
+			  
+			  //"0" is added to pad the date with two digits if day
+			  //is less than 10 e.g 3 becomes 03
+			  var day = ("0" + currentDate.getDate()).slice(-2);
+			  //Get Month is Zero based index
+			  var month = ("0" + (currentDate.getMonth() + 1)).slice(-2);
+			  var year = currentDate.getFullYear();
+			  
+			  return year+"-"+month+"-"+day;
+		}
+ 		
+	</script>
+	<div class="container">
+		<div class="panel-group" id="accordion">
+		<div class="panel panel-default">
+				<div class="panel-heading">
+					<h2 class="panel-title form-signin-heading">
+						<a data-toggle="collapse" data-parent="#accordion" href="#createJobRequisitionFormDiv">Create Job Requisition</a> <label class="required">*</label>
+					</h2>
+				</div>
+				<div id="createJobRequisitionFormDiv" class="panel-collapse collapse in">
+					<div class="panel-body">
+						<form id="createJobRequisitionForm" class="form-signin" role="form" >
+							<label>Organization Reference ID</label>
+							<input type="text" name="organizationReferenceID" value="SUPERVISORY_ORGANIZATION-6-227" class="form-control"><br>
+							<label>Create Job Requisition Reason ID</label>
+							<input type="text" name="createJobRequisitionReasonID" value="Create_Job_Requisition_Administrative_Non-competitive_fill_no_recruiting_required" class="form-control"><br>
+							<label>Job Posting Title</label>
+							<input type="text" name="jobRequisitionTitle" value="Public Relations Officer" class="form-control" ><br>
+							<label>Recruiting Start Date </label>
+							<input type="text" name="recruitingStartDate" value="" class="form-control" ><br>
+							<label>Target Hire Date</label>
+							<input type="text" name="targetHireDate" value="" class="form-control" ><br>
+							<label>Job Profile ID</label>
+							<input type="text" name="jobProfileID" value="35750" class="form-control" ><br>
+							<label>Worker Type ID</label>
+							<input type="text" name="workerTypeID" value="EE" class="form-control" ><br>
+							<label>Employee Type ID</label>
+							<input type="text" name="employeeTypeID" value="Casual" class="form-control" ><br>
+							<label>Location Reference ID</label>
+							<input type="text" name="locationReferenceID" value="Boston_site" class="form-control" ><br>
+							<label>Position Time Type ID</label>
+							<input type="text" name="positionTimeTypeID" value="Full_time" class="form-control" ><br>
+							<input class="btn btn-lg btn-primary btn-block" type="submit" value="Create Job Requisition" ><br>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h2 class="panel-title form-signin-heading">
+						<a data-toggle="collapse" data-parent="#accordion" href="#postJobFormDiv">Post Job</a>
+					</h2>
+				</div>
+				<div id="postJobFormDiv" class="panel-collapse collapse">
+					<div class="panel-body">
+						<form id="postJobForm" class="form-signin" role="form" >
+							<label>Job Posting Site Reference ID</label>
+							<input type="text" name="jobPostingSiteIDValue" value="PSN-0001" class="form-control"><br>
+							<label>Job Requisition Reference ID</label>
+							<input type="text" name="jobRequisitionIDValue" value="" readonly class="form-control"><br>
+							<label>Job Posting Start Date</label>
+							<input type="text" name="startDate" value="" class="form-control" ><br>
+							<label>Job Posting End Date</label>
+							<input type="text" name="endDate" value="" class="form-control" ><br>
+							<input class="btn btn-lg btn-primary btn-block" type="submit" value="Post Job" ><br>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h2 class="panel-title form-signin-heading">
+						<a data-toggle="collapse" data-parent="#accordion" href="#updateJobPostingFormDiv">Update Job Posting</a>
+					</h2>
+				</div>
+				<div id="updateJobPostingFormDiv" class="panel-collapse collapse">
+					<div class="panel-body">
+						<form id="updateJobPostingForm" class="form-signin" role="form" >
+							<label>Job Posting Reference ID</label>
+							<input type="text" name="jobPostingRefIDValue" value="" readonly class="form-control"><br>
+							<label>Job Posting Start Date</label>
+							<input type="text" name="updateStartDate" value="" class="form-control"><br>
+							<label>Job Posting End Date</label>
+							<input type="text" name="updateEndDate" value="US" class="form-control"><br>
+							<input class="btn btn-lg btn-primary btn-block" type="submit" value="Update Job Posting"><br>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h2 class="panel-title form-signin-heading">
+						<a data-toggle="collapse" data-parent="#accordion" href="#unpostJobFormDiv">Unpost Job</a>
+					</h2>
+				</div>
+				<div id="unpostJobFormDiv" class="panel-collapse collapse">
+					<div class="panel-body">
+						<form id="unpostJobForm" class="form-signin" role="form" >
+							<label>Job Posting Reference ID</label>
+							<input type="text" name="unpostJobRefID" value="" readonly class="form-control"><br>
+							<label>Update Job Posting Event Reference ID [WID]</label>
+							<input type="text" name="unpostEventRefID" value="" readonly class="form-control"><br>
+							<input class="btn btn-lg btn-primary btn-block" type="submit" value="Unpost Job"><br>
+						</form>
+					</div>
+				</div>
+			</div>
+		
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h2 class="panel-title form-signin-heading">
+						<a data-toggle="collapse" data-parent="#accordion" href="#closeJobRequisitionFormDiv">Close Job Requisition</a>
+					</h2>
+				</div>
+				<div id="closeJobRequisitionFormDiv" class="panel-collapse collapse">
+					<div class="panel-body">
+						<form id="closeJobRequisitionForm" class="form-signin" role="form" >
+							<label>Job Requisition ID</label>
+							<input type="text" name="closeJobRequisitionRefID" value="" readonly class="form-control"><br>
+							<label>Close Job Requisition Reason ID</label>
+							<input type="text" name="closeJobRequisitionReasonID" value="Close_Job_Requisition_Recruiting_No_longer_recruiting_position_no_longer_needed" readonly class="form-control"><br>
+							<label>Job Requisition Close Date</label>
+							<input type="text" name="jobRequisitionCloseDate" readonly class="form-control"><br>
+							<input class="btn btn-lg btn-primary btn-block" type="submit" value="Close Job Requisition"><br>
+						</form>
+					</div>
+				</div>
+			</div>
+			
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h2 class="panel-title form-signin-heading">
+						<a data-toggle="collapse" data-parent="#accordion" href="#getJobRequisitionFormDiv">Get Job Requisition</a>
+					</h2>
+				</div>
+				<div id="getJobRequisitionFormDiv" class="panel-collapse collapse">
+					<div class="panel-body">
+						<form id="getJobRequisitionForm" class="form-signin" role="form" >
+							<label>Job Requisition ID</label>
+							<input type="text" name="getJobRequisitionRefID" value="" readonly class="form-control"><br>
+							<input class="btn btn-lg btn-primary btn-block" type="submit" value="Get Job Requisition"><br>
+						</form>
+					</div>
+				</div>
+			</div>
+			
+		</div>
+		<p><label class="required">*</label>A Post Job requires a Job Requisition ID</p>
+	</div>
+</body>
+</html>
