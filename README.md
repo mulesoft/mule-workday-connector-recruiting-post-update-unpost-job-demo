@@ -73,4 +73,4 @@ I
 
 ## See more
 * For additional technical information on the Workday Connector, visit our [technical reference documentation](https://docs.mulesoft.com/connectors/workday/workday-reference) or refer to the [Workday Documentation Site](https://docs.mulesoft.com/connectors/workday/workday-connector).
-* For more information on Workday, go to the [Workday API site](https://community.workday.com/api).
+* For more information on Workday, go to the [Workday API site](https://community.workday.com/api). 
